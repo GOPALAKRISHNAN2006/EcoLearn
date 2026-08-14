@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global responsive fix - prevent horizontal overflow */
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Prevent any element from causing horizontal scroll */
+*, *::before, *::after {
+  max-width: 100vw;
+}
+
+/* Custom scrollbar styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive text utilities */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+  }
+}
+
+/* Touch-friendly spacing for mobile */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Gamified Environmental Education App Design System
+All colors MUST be HSL. Eco-friendly, modern, youthful palette.
+*/
+
+@layer base {
+  :root {
+    /* Base Colors - Warm and sophisticated */
+    --background: 40 18% 97%;
+    --foreground: 158 35% 18%;
+
+    /* Card system - Warm cream tones */
+    --card: 38 25% 98%;
+    --card-foreground: 158 30% 22%;
+
+    --popover: 120 15% 99%;
+    --popover-foreground: 160 35% 20%;
+
+    /* Primary - Deep Forest */
+    --primary: 158 64% 28%;
+    --primary-foreground: 40 20% 97%;
+    --primary-glow: 158 70% 38%;
+
+    /* Secondary - Warm Amber */
+    --secondary: 32 94% 54%;
+    --secondary-foreground: 158 40% 12%;
+
+    /* Muted - Warm gray */
+    --muted: 30 8% 92%;
+    --muted-foreground: 25 10% 42%;
+
+    /* Accent - Rich Teal */
+    --accent: 180 58% 42%;
+    --accent-foreground: 40 20% 97%;
+
+    /* Success/Growth - Sage green */
+    --success: 145 48% 48%;
+    --success-foreground: 40 20% 97%;
+
+    /* Destructive - Earth red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 120 20% 98%;
+
+    /* Interactive elements */
+    --border: 30 12% 86%;
+    --input: 30 12% 86%;
+    --ring: 158 64% 28%;
+
+    /* Solid color alternatives */
+    --gradient-eco: hsl(158 64% 28%);
+    --gradient-ocean: hsl(180 58% 42%);
+    --gradient-subtle: hsl(var(--background));
+    --gradient-hero: hsl(158 64% 28%);
+
+    /* Shadows - Eco-themed with green tints */
+    --shadow-eco: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-card: 0 4px 20px -8px hsl(var(--primary) / 0.15);
+    --shadow-glow: 0 0 40px hsl(var(--accent) / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode - Sophisticated charcoal */
+    --background: 220 15% 12%;
+    --foreground: 40 20% 88%;
+
+    --card: 220 14% 15%;
+    --card-foreground: 40 18% 86%;
+
+    --popover: 220 14% 15%;
+    --popover-foreground: 40 18% 86%;
+
+    --primary: 158 58% 52%;
+    --primary-foreground: 220 15% 12%;
+    --primary-glow: 158 62% 58%;
+
+    --secondary: 217 91% 65%;
+    --secondary-foreground: 160 40% 8%;
+
+    --muted: 160 25% 15%;
+    --muted-foreground: 120 15% 65%;
+
+    --accent: 120 100% 40%;
+    --accent-foreground: 160 40% 8%;
+
+    --success: 120 100% 40%;
+    --success-foreground: 160 40% 8%;
+
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 160 40% 8%;
+
+    --border: 160 25% 20%;
+    --input: 160 25% 20%;
+    --ring: 142 86% 45%;
+
+    /* Solid colors for dark mode */
+    --gradient-eco: hsl(var(--primary));
+    --gradient-ocean: hsl(180 58% 48%);
+    --gradient-subtle: hsl(var(--background));
+    --gradient-hero: hsl(158 58% 52%);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
+
+  /* Custom animations for gamification */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 20px hsl(var(--accent) / 0.3); }
+    to { box-shadow: 0 0 30px hsl(var(--accent) / 0.6), 0 0 40px hsl(var(--accent) / 0.3); }
+  }
+
+  @keyframes bounce-gentle {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-5px) scale(1.02); }
+  }
+}
+
+@layer components {
+  /* Eco-themed progress bar */
+  .progress-eco {
+    @apply bg-muted rounded-full overflow-hidden relative;
+  }
+
+  .progress-eco::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary via-accent to-success rounded-full transition-all duration-500;
+    transform: translateX(-100%);
+  }
+
+  .progress-eco[data-value="25"]::after { transform: translateX(-75%); }
+  .progress-eco[data-value="50"]::after { transform: translateX(-50%); }
+  .progress-eco[data-value="75"]::after { transform: translateX(-25%); }
+  .progress-eco[data-value="100"]::after { transform: translateX(0%); }
+
+  /* Gamification badges */
+  .badge-eco {
+    @apply relative inline-flex items-center justify-center w-16 h-16 rounded-full;
+    background: var(--gradient-eco);
+    box-shadow: var(--shadow-eco);
+  }
+
+  .badge-eco::before {
+    content: '';
+    @apply absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/20;
+  }
+
+  /* Interactive card hover effects */
+  .card-interactive {
+    @apply transition-all duration-300 cursor-pointer;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-interactive:hover {
+    @apply -translate-y-2;
+    box-shadow: var(--shadow-eco);
+  }
+}
