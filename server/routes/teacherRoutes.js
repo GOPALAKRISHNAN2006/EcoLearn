@@ -4,7 +4,8 @@ import {
   teacherLogin,
   teacherRegister,
   createStudent, 
-  importStudentsFromFile, 
+  importStudentsFromFile,
+  importStudents,
   getStudentsByTeacher, 
   generateCredentials,
   deleteStudent,
@@ -40,6 +41,7 @@ teacherRouter.post('/register', teacherRegister);
 // Teacher manages students
 teacherRouter.post('/create-students', createStudent);
 teacherRouter.post('/import-students-file', upload.single('file'), importStudentsFromFile);
+teacherRouter.post('/import-students', importStudents);
 teacherRouter.get('/students/:teacherId', getStudentsByTeacher);
 teacherRouter.get('/student-details/:studentId', getStudentDetails);
 teacherRouter.post('/generate-credentials', generateCredentials);
