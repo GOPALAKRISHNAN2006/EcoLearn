@@ -133,10 +133,12 @@ const Login = () => {
           <Alert variant="destructive" className="mb-4 bg-red-200">
             <AlertDescription>
               <b>
-                <h1>
-                  For Testing you can use Student
-                  <h1>Roll number : 1234567890</h1>
-                  <h1>Password : 1234567890</h1>
+                <h1 className="text-sm">
+                  For Testing you can use:
+                  <div className="mt-2 text-left">
+                    <p><b>Teacher:</b> ID: TEACH001 | Pass: teacher123</p>
+                    <p><b>Student:</b> Roll No: STU001 | Pass: student123</p>
+                  </div>
                 </h1>
               </b>
             </AlertDescription>

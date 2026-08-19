@@ -7,7 +7,7 @@ dotenv.config();
 // MongoDB connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecolearn');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/EcoLearn');
     console.log('Database Connected');
   } catch (error) {
     console.error('Database connection error:', error);

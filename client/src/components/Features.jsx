@@ -40,7 +40,7 @@ const Features = () => {
       icon: TrendingUp,
       title: "Progress Tracking",
       description: "Track your learning journey and achievements",
-      image: null,
+      image: learningModules,
       stats: "Real-time Analytics",
       color: "text-accent"
     },
@@ -48,7 +48,7 @@ const Features = () => {
       icon: Gift,
       title: "Earn Certificates",
       description: "Get certified for your environmental knowledge",
-      image: null,
+      image: ecoBadges,
       stats: "100+ Rewards",
       color: "text-success"
     }
@@ -109,7 +109,7 @@ const Features = () => {
                   </div>
                 )}
                 {!feature.image && (
-                  <div className="h-32 bg-gradient-eco rounded-lg mb-4 flex items-center justify-center">
+                  <div className="h-48 bg-gradient-eco rounded-lg mb-4 flex items-center justify-center">
                     <feature.icon className="w-16 h-16 text-primary-foreground opacity-80" />
                   </div>
                 )}
@@ -149,7 +149,12 @@ const Features = () => {
                         <span className="font-medium">{achievement.name}</span>
                         <span className="text-sm text-muted-foreground">{achievement.progress}%</span>
                       </div>
-                      <div className="progress-eco h-2" data-value={achievement.progress}></div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary via-accent to-success transition-all duration-500" 
+                          style={{ width: `${achievement.progress}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 ))}
