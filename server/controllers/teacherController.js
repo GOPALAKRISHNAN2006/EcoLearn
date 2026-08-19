@@ -62,6 +62,50 @@ export const teacherLogin = async (req, res) => {
   }
 };
 
+// Teacher Registration
+export const teacherRegister = async (req, res) => {
+  try {
+    const { Name, email, phone, teacherId, password } = req.body;
+
+    if (!Name || !email || !teacherId || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide all required fields' });
+    }
+
+    const existingTeacher = await Teacher.findOne({ $or: [{ email }, { teacherId }] });
+    if (existingTeacher) {
+      return res.status(400).json({ success: false, message: 'Teacher with this email or ID already exists' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const teacher = await Teacher.create({
+      Name,
+      email,
+      phone: phone || '',
+      teacherId,
+      password: hashedPassword
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Teacher registered successfully',
+      data: {
+        user: {
+          id: teacher._id,
+          Name: teacher.Name,
+          teacherId: teacher.teacherId,
+          email: teacher.email,
+          role: 'teacher'
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Teacher registration error:', error);
+    res.status(500).json({ success: false, message: 'Server error during registration' });
+  }
+};
+
 // Create student manually
 export const createStudent = async (req, res) => {
   try {
