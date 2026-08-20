@@ -476,33 +476,6 @@ export const deleteStudent = async (req, res) => {
   }
 };
 
-// Delete student
-export const deleteStudent = async (req, res) => {
-  try {
-    const { studentId } = req.params;
-
-    const student = await Student.findById(studentId);
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: 'Student not found'
-      });
-    }
-
-    await Student.findByIdAndDelete(studentId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Student deleted successfully'
-    });
-  } catch (error) {
-    console.error('Delete student error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error while deleting student' 
-    });
-  }
-};
 
 // Update student
 export const updateStudent = async (req, res) => {
