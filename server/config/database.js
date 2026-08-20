@@ -19,9 +19,10 @@ const connectDB = async () => {
         });
 
         // Connect with retry logic and proper options
-        const mongoURI = process.env.MONGODB_URI.includes('EcoLearn')
-            ? process.env.MONGODB_URI
-            : `${process.env.MONGODB_URI}/EcoLearn`;
+        const mongoURI = process.env.MONGODB_URI;
+        if (!mongoURI) {
+            throw new Error("MONGODB_URI is not defined in the environment variables");
+        }
 
         await mongoose.connect(mongoURI, {
             serverSelectionTimeoutMS: 5000,
