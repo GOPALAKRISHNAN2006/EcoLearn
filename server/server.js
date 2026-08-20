@@ -20,6 +20,7 @@ import videoLessonRouter from './routes/videoLessonRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import adminRouter from './routes/adminRoutes.js';
+import Admin from './models/Admin.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -37,6 +38,22 @@ if (!fs.existsSync(videosDir)) {
 }
 
 await connectDB();
+
+// Auto-seed default admin if database is empty
+try {
+  const adminCount = await Admin.countDocuments();
+  if (adminCount === 0) {
+    await Admin.create({
+      name: 'Admin User',
+      adminId: 'admin001',
+      password: 'admin123',
+      schoolName: 'EcoLearn School'
+    });
+    console.log('✅ Auto-seeded default admin user (admin001) for production');
+  }
+} catch (error) {
+  console.error('Error auto-seeding admin:', error);
+}
 
 app.use(cors({
   origin: '*',
