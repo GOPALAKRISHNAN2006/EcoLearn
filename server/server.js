@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 import adminRouter from './routes/adminRoutes.js';
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads/assignments');
@@ -82,6 +82,6 @@ app.use('/api/video-lesson', videoLessonRouter);
 
 
 
-app.listen(port, ()=>{
-    console.log(`Server is running on http://localhost:${port}`)
+app.listen(port, '0.0.0.0', ()=>{
+    console.log(`Server is running on port ${port}`)
 })
