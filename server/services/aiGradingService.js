@@ -6,9 +6,9 @@ class AIGradingService {
     this.apiKey = process.env.GEMINI_API_KEY_GRADING; // Default key for grading
     this.assignmentApiKey = process.env.GEMINI_API_KEY_ASSIGNMENT; // For assignment OCR/grading
     this.quizApiKey = process.env.GEMINI_API_KEY_QUIZ; // For quiz generation
-    // Using gemini-2.5-flash model
+    // Using gemini-3.6-flash model
     this.apiUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
     this.maxRetries = 3;
     this.baseDelay = 2000; // 2 seconds base delay
   }
