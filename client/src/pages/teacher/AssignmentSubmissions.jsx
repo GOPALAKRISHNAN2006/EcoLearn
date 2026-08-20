@@ -544,7 +544,8 @@ const AssignmentSubmissions = () => {
                                                                     const isImage = file.fileType?.startsWith('image/');
                                                                     // Ensure the fileUrl starts with a forward slash
                                                                     const cleanFileUrl = file.fileUrl?.startsWith('/') ? file.fileUrl : `/${file.fileUrl}`;
-                                                                    const fileUrl = `http://localhost:5000${cleanFileUrl}`;
+                                                                    const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+                                                                    const fileUrl = `${baseUrl}${cleanFileUrl}`;
                                                                     
                                                                     return (
                                                                         <div key={idx} className="bg-blue-50 rounded-lg p-3">
