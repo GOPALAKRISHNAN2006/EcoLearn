@@ -41,6 +41,33 @@ export const studentLogin = async (req, res) => {
     // Check if this is first login (need to change password)
     const isFirstLogin = student.isFirstLogin !== false;
 
+    // Calculate streak
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (student.lastLogin) {
+      const lastLoginDate = new Date(student.lastLogin);
+      lastLoginDate.setHours(0, 0, 0, 0);
+
+      const diffTime = Math.abs(today - lastLoginDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        // Logged in yesterday, increment streak
+        student.streak = (student.streak || 0) + 1;
+      } else if (diffDays > 1) {
+        // Missed a day, reset streak
+        student.streak = 1;
+      }
+      // If diffDays === 0, already logged in today
+    } else {
+      // First time logging in
+      student.streak = 1;
+    }
+
+    student.lastLogin = new Date();
+    await student.save();
+
     res.status(200).json({
       success: true,
       message: isFirstLogin
@@ -59,6 +86,7 @@ export const studentLogin = async (req, res) => {
           joiningDate: student.joiningDate,
           role: "student",
           isFirstLogin: isFirstLogin,
+          streak: student.streak,
         },
       },
     });

@@ -23,6 +23,7 @@ const studentSchema = new mongoose.Schema(
     todayPoints: { type: Number, default: 0 },
     lastPointsDate: { type: Date },
     streak: { type: Number, default: 0 },
+    lastLogin: { type: Date },
     level: { type: Number, default: 1 },
     currentXP: { type: Number, default: 0 },
     nextLevelXP: { type: Number, default: 100 },

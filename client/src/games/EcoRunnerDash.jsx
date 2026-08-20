@@ -588,6 +588,11 @@ const EcoRunnerDash = () => {
     const restartHandler = () => restartLevel();
     const backHandler = () => backToMenu();
     const mobileJumpHandler = () => jump();
+    const handleGameAreaTouch = (e) => {
+      if (e.target.tagName !== 'BUTTON') {
+        jump();
+      }
+    };
     const overlayRestartHandler = () => restartLevel();
     const overlayBackHandler = () => backToMenu();
 
@@ -599,6 +604,8 @@ const EcoRunnerDash = () => {
     if (backToMenuBtn) backToMenuBtn.addEventListener("click", backHandler);
     if (mobileJumpBtn)
       mobileJumpBtn.addEventListener("click", mobileJumpHandler);
+    if (gameArea)
+      gameArea.addEventListener("touchstart", handleGameAreaTouch, { passive: true });
     if (overlayRestartBtn)
       overlayRestartBtn.addEventListener("click", overlayRestartHandler);
     if (overlayBackBtn)
@@ -623,6 +630,8 @@ const EcoRunnerDash = () => {
         backToMenuBtn.removeEventListener("click", backHandler);
       if (mobileJumpBtn)
         mobileJumpBtn.removeEventListener("click", mobileJumpHandler);
+      if (gameArea)
+        gameArea.removeEventListener("touchstart", handleGameAreaTouch);
       if (overlayRestartBtn)
         overlayRestartBtn.removeEventListener("click", overlayRestartHandler);
       if (overlayBackBtn)
