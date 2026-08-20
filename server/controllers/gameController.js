@@ -546,9 +546,22 @@ export const completeGame = async (req, res) => {
       playedAt: new Date(),
     });
 
-    // Update GAME POINTS (not eco points) and XP
+    // Update GAME POINTS and GLOBAL ECO POINTS and XP
     student.gamePoints += pointsEarned;
     student.currentXP += pointsEarned;
+
+    const today = new Date().toDateString();
+    const lastPointsDate = student.lastPointsDate
+      ? new Date(student.lastPointsDate).toDateString()
+      : null;
+
+    if (lastPointsDate !== today) {
+      student.todayPoints = 0;
+    }
+
+    student.points = (student.points || 0) + pointsEarned;
+    student.todayPoints = (student.todayPoints || 0) + pointsEarned;
+    student.lastPointsDate = new Date();
     
     // Add coins if provided
     if (coinsEarned && coinsEarned > 0) {
