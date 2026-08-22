@@ -16,26 +16,30 @@ import {
   redeemReward,
   getRedemptionHistory
 } from '../controllers/gameController.js';
+import { authenticateUser, authorizeRoles, verifyOwnership } from '../middleware/authMiddleware.js';
 
 const gameRouter = express.Router();
+
+// Protect all routes
+gameRouter.use(authenticateUser);
 
 // Student routes
 gameRouter.get('/class/:studentClass', getGamesForClass);
 gameRouter.post('/complete', completeGame);
-gameRouter.get('/history/:studentId', getGameHistory);
-gameRouter.get('/rewards/:studentId', getStudentRewards);
+gameRouter.get('/history/:studentId', verifyOwnership, getGameHistory);
+gameRouter.get('/rewards/:studentId', verifyOwnership, getStudentRewards);
 gameRouter.post('/redeem', redeemReward);
-gameRouter.get('/redemptions/:studentId', getRedemptionHistory);
+gameRouter.get('/redemptions/:studentId', verifyOwnership, getRedemptionHistory);
 
 // Admin routes
-gameRouter.get('/all', getAllGames);
-gameRouter.get('/classes', getAvailableClasses);
-gameRouter.post('/create', createGame);
-gameRouter.post('/seed', seedGames);
-gameRouter.put('/:gameId', updateGame);
-gameRouter.put('/:gameId/classes', updateGameClasses);
-gameRouter.put('/:gameId/toggle-status', toggleGameStatus);
-gameRouter.post('/bulk-update-classes', bulkUpdateGameClasses);
-gameRouter.delete('/:gameId', deleteGame);
+gameRouter.get('/all', authorizeRoles('admin'), getAllGames);
+gameRouter.get('/classes', authorizeRoles('admin'), getAvailableClasses);
+gameRouter.post('/create', authorizeRoles('admin'), createGame);
+gameRouter.post('/seed', authorizeRoles('admin'), seedGames);
+gameRouter.put('/:gameId', authorizeRoles('admin'), updateGame);
+gameRouter.put('/:gameId/classes', authorizeRoles('admin'), updateGameClasses);
+gameRouter.put('/:gameId/toggle-status', authorizeRoles('admin'), toggleGameStatus);
+gameRouter.post('/bulk-update-classes', authorizeRoles('admin'), bulkUpdateGameClasses);
+gameRouter.delete('/:gameId', authorizeRoles('admin'), deleteGame);
 
 export default gameRouter;

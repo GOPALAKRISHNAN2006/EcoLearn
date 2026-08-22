@@ -14,6 +14,7 @@ import {
   awardGamePoints,
   generateQuiz,
 } from "../controllers/videoLessonController.js";
+import { authenticateUser, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,8 +49,11 @@ const upload = multer({
 
 const videoLessonRouter = express.Router();
 
-// Upload video file endpoint
-videoLessonRouter.post("/upload", upload.single("video"), (req, res) => {
+// Protect all routes
+videoLessonRouter.use(authenticateUser);
+
+// Upload video file endpoint (Teacher / Admin only)
+videoLessonRouter.post("/upload", authorizeRoles('teacher', 'admin'), upload.single("video"), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -80,13 +84,13 @@ videoLessonRouter.post("/upload", upload.single("video"), (req, res) => {
   }
 });
 
-// Admin routes
-videoLessonRouter.post("/generate-quiz", generateQuiz);
-videoLessonRouter.post("/", createVideo);
+// Admin / Teacher routes
+videoLessonRouter.post("/generate-quiz", authorizeRoles('teacher', 'admin'), generateQuiz);
+videoLessonRouter.post("/", authorizeRoles('teacher', 'admin'), createVideo);
 videoLessonRouter.get("/", getAllVideos);
 videoLessonRouter.get("/:id", getVideoById);
-videoLessonRouter.put("/:id", updateVideo);
-videoLessonRouter.delete("/:id", deleteVideo);
+videoLessonRouter.put("/:id", authorizeRoles('teacher', 'admin'), updateVideo);
+videoLessonRouter.delete("/:id", authorizeRoles('teacher', 'admin'), deleteVideo);
 
 // Student routes
 videoLessonRouter.get("/grade/:grade", getVideosByGrade);

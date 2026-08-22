@@ -1,6 +1,8 @@
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import Student from "../models/Student.js";
+import RefreshToken from "../models/RefreshToken.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwtHelper.js";
 
 // Student Login
 export const studentLogin = async (req, res) => {
@@ -68,11 +70,30 @@ export const studentLogin = async (req, res) => {
     student.lastLogin = new Date();
     await student.save();
 
+    const userPayload = { id: student._id, studentId: student.rollNumber, role: 'student' };
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: student._id.toString(),
+      role: 'student',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     res.status(200).json({
       success: true,
       message: isFirstLogin
         ? "First login - password change required"
         : "Login successful",
+      accessToken,
       data: {
         user: {
           id: student._id,
@@ -144,26 +165,45 @@ export const changePassword = async (req, res) => {
     const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
     // Update password and clear first login flag
-    await Student.findByIdAndUpdate(student._id, {
+    const updatedStudent = await Student.findByIdAndUpdate(student._id, {
       passwordHash: newPasswordHash,
       plainPassword: null,
       isFirstLogin: false,
+    }, { new: true });
+
+    const userPayload = { id: updatedStudent._id, studentId: updatedStudent.rollNumber, role: 'student' };
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: updatedStudent._id.toString(),
+      role: 'student',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     res.status(200).json({
       success: true,
       message: "Password changed successfully",
+      accessToken,
       data: {
         user: {
-          id: student._id,
-          name: student.name,
-          rollNumber: student.rollNumber,
-          email: student.email,
-          phone: student.phone,
-          address: student.address,
-          school: student.school,
-          class: student.class,
-          joiningDate: student.joiningDate,
+          id: updatedStudent._id,
+          name: updatedStudent.name,
+          rollNumber: updatedStudent.rollNumber,
+          email: updatedStudent.email,
+          phone: updatedStudent.phone,
+          address: updatedStudent.address,
+          school: updatedStudent.school,
+          class: updatedStudent.class,
+          joiningDate: updatedStudent.joiningDate,
           role: "student",
           isFirstLogin: false,
         },

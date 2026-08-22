@@ -2,6 +2,8 @@ import Admin from '../models/Admin.js';
 import Teacher from '../models/Teacher.js';
 import Student from '../models/Student.js';
 import bcrypt from 'bcryptjs';
+import RefreshToken from '../models/RefreshToken.js';
+import { generateAccessToken, generateRefreshToken } from '../utils/jwtHelper.js';
 
 // Login admin
 export const loginAdmin = async (req, res) => {
@@ -24,22 +26,42 @@ export const loginAdmin = async (req, res) => {
       });
     }
 
-    // Plain password comparison (as requested)
-    if (admin.password !== password) {
+    const isPasswordValid = await admin.comparePassword(password);
+    if (!isPasswordValid) {
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid password' 
       });
     }
 
+    const userPayload = { id: admin._id, adminId: admin.adminId, role: 'admin' };
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: admin._id.toString(),
+      role: 'admin',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      accessToken,
       data: {
         id: admin._id,
         name: admin.name,
         adminId: admin.adminId,
-        schoolName: admin.schoolName
+        schoolName: admin.schoolName,
+        role: 'admin'
       }
     });
   } catch (error) {

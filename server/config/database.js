@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "./logger.js";
 
 const connectDB = async () => {
     try {
@@ -7,15 +8,15 @@ const connectDB = async () => {
 
         // Connection event handlers
         mongoose.connection.on('connected', () => {
-            console.log('✅ Database Connected Successfully');
+            logger.info('Database Connected Successfully');
         });
 
         mongoose.connection.on('error', (err) => {
-            console.error('❌ MongoDB connection error:', err);
+            logger.error(`MongoDB connection error: ${err.message}`);
         });
 
         mongoose.connection.on('disconnected', () => {
-            console.log('⚠️  MongoDB disconnected');
+            logger.warn('MongoDB disconnected');
         });
 
         // Connect with retry logic and proper options

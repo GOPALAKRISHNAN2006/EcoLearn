@@ -3,6 +3,8 @@ import Teacher from '../models/Teacher.js';
 import Student from '../models/Student.js';
 import bcrypt from 'bcryptjs';
 import xlsx from 'xlsx';
+import RefreshToken from '../models/RefreshToken.js';
+import { generateAccessToken, generateRefreshToken } from '../utils/jwtHelper.js';
 
 // Generate random password
 const generateRandomPassword = (length = 8) => {
@@ -40,9 +42,28 @@ export const teacherLogin = async (req, res) => {
     }
 
 
+    const userPayload = { id: teacher._id, teacherId: teacher.teacherId, role: 'teacher' };
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: teacher._id.toString(),
+      role: 'teacher',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      accessToken,
       data: {
         user: {
           id: teacher._id,
@@ -87,9 +108,28 @@ export const teacherRegister = async (req, res) => {
       password: hashedPassword
     });
 
+    const userPayload = { id: teacher._id, teacherId: teacher.teacherId, role: 'teacher' };
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: teacher._id.toString(),
+      role: 'teacher',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     res.status(201).json({
       success: true,
       message: 'Teacher registered successfully',
+      accessToken,
       data: {
         user: {
           id: teacher._id,

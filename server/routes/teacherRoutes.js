@@ -12,6 +12,7 @@ import {
   updateStudent,
   getStudentDetails
 } from '../controllers/teacherController.js';
+import { authenticateUser, authorizeRoles, verifyOwnership } from '../middleware/authMiddleware.js';
 
 const teacherRouter = express.Router();
 
@@ -38,14 +39,18 @@ const upload = multer({
 teacherRouter.post('/login', teacherLogin);
 teacherRouter.post('/register', teacherRegister);
 
+// Protect all routes below this line
+teacherRouter.use(authenticateUser);
+teacherRouter.use(authorizeRoles('teacher', 'admin'));
+
 // Teacher manages students
 teacherRouter.post('/create-students', createStudent);
 teacherRouter.post('/import-students-file', upload.single('file'), importStudentsFromFile);
 teacherRouter.post('/import-students', importStudents);
-teacherRouter.get('/students/:teacherId', getStudentsByTeacher);
-teacherRouter.get('/student-details/:studentId', getStudentDetails);
+teacherRouter.get('/students/:teacherId', verifyOwnership, getStudentsByTeacher);
+teacherRouter.get('/student-details/:studentId', verifyOwnership, getStudentDetails);
 teacherRouter.post('/generate-credentials', generateCredentials);
-teacherRouter.delete('/students/:studentId', deleteStudent);
-teacherRouter.put('/students/:studentId', updateStudent);
+teacherRouter.delete('/students/:studentId', verifyOwnership, deleteStudent);
+teacherRouter.put('/students/:studentId', verifyOwnership, updateStudent);
 
 export default teacherRouter;

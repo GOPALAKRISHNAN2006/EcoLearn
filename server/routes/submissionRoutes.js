@@ -10,6 +10,7 @@ import {
   checkSubmission,
   getStudentAssignmentsWithStatus
 } from '../controllers/submissionController.js';
+import { authenticateUser, authorizeRoles, verifyOwnership } from '../middleware/authMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,6 +47,9 @@ const upload = multer({
   },
 });
 
+// Protect all routes below this line
+router.use(authenticateUser);
+
 // Submit an assignment with file uploads
 router.post('/submit', (req, res, next) => {
   upload.array('files', 10)(req, res, (err) => {
@@ -59,18 +63,18 @@ router.post('/submit', (req, res, next) => {
 }, submitAssignment);
 
 // Get all submissions for a student
-router.get('/student/:studentId', getStudentSubmissions);
+router.get('/student/:studentId', verifyOwnership, getStudentSubmissions);
 
-// Get all submissions for an assignment
-router.get('/assignment/:assignmentId', getAssignmentSubmissions);
+// Get all submissions for an assignment (Teacher / Admin only)
+router.get('/assignment/:assignmentId', authorizeRoles('teacher', 'admin'), getAssignmentSubmissions);
 
 // Get student assignments with submission status
-router.get('/student/:studentId/class/:grade/:section', getStudentAssignmentsWithStatus);
+router.get('/student/:studentId/class/:grade/:section', verifyOwnership, getStudentAssignmentsWithStatus);
 
 // Check if student has submitted an assignment
-router.get('/check/:assignmentId/:studentId', checkSubmission);
+router.get('/check/:assignmentId/:studentId', verifyOwnership, checkSubmission);
 
-// Grade a submission
-router.put('/grade/:submissionId', gradeSubmission);
+// Grade a submission (Teacher / Admin only)
+router.put('/grade/:submissionId', authorizeRoles('teacher', 'admin'), gradeSubmission);
 
 export default router;

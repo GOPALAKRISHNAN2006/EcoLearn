@@ -1,4 +1,5 @@
 import api from './api';
+import { setAccessToken } from './tokenStore';
 
 // Admin API Service
 const adminService = {
@@ -6,6 +7,9 @@ const adminService = {
   // Login admin
   login: async (adminId, password) => {
     const response = await api.post('/admin/user/login', { adminId, password });
+    if (response.data.success) {
+      setAccessToken(response.data.accessToken);
+    }
     return response.data;
   },
 

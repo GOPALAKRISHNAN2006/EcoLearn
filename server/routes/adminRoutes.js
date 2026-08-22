@@ -12,12 +12,17 @@ import {
   deleteTeacher,
   deleteStudent
 } from '../controllers/adminController.js';
+import { authenticateUser, authorizeRoles } from '../middleware/authMiddleware.js';
 
 const adminRouter = express.Router();
 
 // ============ ADMIN USER ROUTES ============
 // POST /api/admin/user/login - Admin login
 adminRouter.post('/user/login', loginAdmin);
+
+// Protect all routes below this line
+adminRouter.use(authenticateUser);
+adminRouter.use(authorizeRoles('admin'));
 
 // POST /api/admin/user - Create new admin
 adminRouter.post('/user', createAdmin);
