@@ -23,6 +23,8 @@ import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import cookieParser from 'cookie-parser';
 import logger from './config/logger.js';
+import compression from 'compression';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +33,8 @@ import Admin from './models/Admin.js';
 import authRouter from './routes/authRoutes.js';
 
 const app = express();
+app.use(compression());
+
 const port = process.env.PORT || 5000;
 
 // Create uploads directory if it doesn't exist
@@ -145,6 +149,7 @@ app.use('/api/admin/user/login', authLimiter);
 // Serve uploaded files with proper headers
 app.use('/uploads', (req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   next();
 }, express.static(path.join(__dirname, 'uploads')));
 

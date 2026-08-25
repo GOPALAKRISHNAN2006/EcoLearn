@@ -18,9 +18,22 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ["react", "react-dom"],
-          vendor: ["react-router-dom", "@tanstack/react-query"],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('@react-three') || id.includes('three-stdlib')) {
+              return 'three-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'lucide-vendor';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom') || id.includes('@tanstack/react-query')) {
+              return 'react-core';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'radix-vendor';
+            }
+            return 'vendor';
+          }
         },
       },
     },

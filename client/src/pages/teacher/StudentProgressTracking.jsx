@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from '../../components/Navigation';
+import { debounce } from '../../utils/perf';
 import { 
   Users, 
   Trophy, 
@@ -29,7 +30,20 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const StudentProgressTracking = () => {
   const [selectedView, setSelectedView] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [selectedClass, setSelectedClass] = useState('all');
+
+  // Debounce updates to searchTerm to avoid lag during typing
+  const debouncedSetSearchTerm = useMemo(
+    () => debounce((value) => setSearchTerm(value), 300),
+    []
+  );
+
+  const handleSearchChange = useCallback((e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    debouncedSetSearchTerm(value);
+  }, [debouncedSetSearchTerm]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
@@ -160,18 +174,23 @@ const StudentProgressTracking = () => {
     }
   }, [selectedStudent]);
 
-  // Add class assignment counts to students
-  const studentsWithAssignments = students.map(student => ({
-    ...student,
-    totalAssignments: classAssignments[student.class] || 0
-  }));
+  // Add class assignment counts to students - memoized
+  const studentsWithAssignments = useMemo(() => {
+    return students.map(student => ({
+      ...student,
+      totalAssignments: classAssignments[student.class] || 0
+    }));
+  }, [students, classAssignments]);
 
-  const filteredStudents = studentsWithAssignments.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesClass = selectedClass === 'all' || student.class === selectedClass;
-    return matchesSearch && matchesClass;
-  });
+  // Filter students based on search term and selected class - memoized
+  const filteredStudents = useMemo(() => {
+    return studentsWithAssignments.filter(student => {
+      const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           student.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesClass = selectedClass === 'all' || student.class === selectedClass;
+      return matchesSearch && matchesClass;
+    });
+  }, [studentsWithAssignments, searchTerm, selectedClass]);
 
   // Helper function to calculate percentage safely
   const getProgressPercentage = (completed, total) => {
@@ -339,8 +358,8 @@ const StudentProgressTracking = () => {
               <input
                 type="text"
                 placeholder="Search students..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchValue}
+                onChange={handleSearchChange}
                 style={{
                   width: '100%',
                   padding: '0.75rem 0.75rem 0.75rem 2.5rem',
