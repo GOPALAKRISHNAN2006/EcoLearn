@@ -23,15 +23,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('three') || id.includes('@react-three') || id.includes('three-stdlib')) {
               return 'three-vendor';
             }
-            if (id.includes('lucide-react')) {
-              return 'lucide-vendor';
-            }
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom') || id.includes('@tanstack/react-query')) {
-              return 'react-core';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'radix-vendor';
-            }
             return 'vendor';
           }
         },
