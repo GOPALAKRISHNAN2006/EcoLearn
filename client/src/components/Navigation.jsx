@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Leaf, Award, BookOpen, Users, Mail, Globe, Camera, Gamepad2, Brain, LogOut, Trophy, User, Upload, Shield, BarChart3, AlertTriangle, School, Settings, FileCheck, ClipboardCheck, Target, Gift } from "lucide-react";
+import { Menu, X, Leaf, Award, BookOpen, Users, Mail, Globe, Camera, Gamepad2, Brain, LogOut, Trophy, User, Upload, Shield, BarChart3, AlertTriangle, School, Settings, FileCheck, ClipboardCheck, Target, Gift, Sparkles } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Navigation = ({ userType = null, onLogout = null }) => {
@@ -45,10 +45,14 @@ const Navigation = ({ userType = null, onLogout = null }) => {
 
   // Admin navigation items
   const adminNavItems = [
+    { name: "Dashboard", path: "/admin/dashboard", icon: Leaf, group: "main" },
     { name: "Users", path: "/admin/users", icon: Users, group: "management" },
-    { name: "Analytics", path: "/admin/analytics", icon: BarChart3, group: "insights" },
-    { name: "Moderation", path: "/admin/moderation", icon: AlertTriangle, group: "management" },
-    { name: "Settings", path: "/admin/settings", icon: Settings, group: "system" },
+    { name: "Students", path: "/admin/students", icon: School, group: "management" },
+    { name: "Teachers", path: "/admin/teachers", icon: User, group: "management" },
+    { name: "Upload Video", path: "/admin/upload-video", icon: Upload, group: "content" },
+    { name: "AI Videos", path: "/admin/ai-videos", icon: Camera, group: "content" },
+    { name: "Syllabus Video", path: "/admin/syllabus-video", icon: Sparkles, group: "content" },
+    { name: "Games", path: "/admin/game-management", icon: Gamepad2, group: "content" },
   ];
 
   // Choose navigation items based on user type
@@ -374,6 +378,25 @@ const Navigation = ({ userType = null, onLogout = null }) => {
               ) : currentUserType === 'admin' ? (
                 // Grouped navigation for admins
                 <>
+                  {/* Main Section */}
+                  {navItems.filter(item => item.group === 'main').map((item) => (
+                    <NavLink
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                          isActive 
+                            ? "text-emerald-400 font-medium bg-emerald-500/20" 
+                            : "text-gray-400 hover:text-emerald-400 hover:bg-gray-800"
+                        }`
+                      }
+                    >
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="font-medium">{getDisplayName(item, true)}</span>
+                    </NavLink>
+                  ))}
+
                   {/* Management Section */}
                   <div className="pt-2">
                     <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -398,36 +421,12 @@ const Navigation = ({ userType = null, onLogout = null }) => {
                     ))}
                   </div>
 
-                  {/* Insights Section */}
+                  {/* Content Section */}
                   <div className="pt-2">
                     <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Insights
+                      Content & Media
                     </div>
-                    {navItems.filter(item => item.group === 'insights').map((item) => (
-                      <NavLink
-                        key={item.name}
-                        to={item.path}
-                        onClick={() => setIsOpen(false)}
-                        className={({ isActive }) =>
-                          `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                            isActive 
-                              ? "text-emerald-400 font-medium bg-emerald-500/20" 
-                              : "text-gray-400 hover:text-emerald-400 hover:bg-gray-800"
-                          }`
-                        }
-                      >
-                        <item.icon className="w-5 h-5 flex-shrink-0" />
-                        <span className="font-medium">{getDisplayName(item, true)}</span>
-                      </NavLink>
-                    ))}
-                  </div>
-
-                  {/* System Section */}
-                  <div className="pt-2">
-                    <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      System
-                    </div>
-                    {navItems.filter(item => item.group === 'system').map((item) => (
+                    {navItems.filter(item => item.group === 'content').map((item) => (
                       <NavLink
                         key={item.name}
                         to={item.path}

@@ -45,7 +45,9 @@ window.fetch = async function (url, options = {}) {
           }
           return originalFetch(url, options);
         } else {
-          if (!window.location.pathname.includes('/login')) {
+          const publicPaths = ['/', '/features', '/about', '/contact', '/explore-nature', '/get-started', '/login', '/register', '/forgot-password', '/environmental-stories'];
+          const isPublicPage = publicPaths.some(p => window.location.pathname === p || window.location.pathname.startsWith('/explore-nature'));
+          if (!isPublicPage && !window.location.pathname.includes('/login')) {
             window.location.href = '/login';
           }
         }

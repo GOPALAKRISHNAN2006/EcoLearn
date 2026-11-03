@@ -86,6 +86,8 @@ app.use(helmet({
 
 // CORS Configuration
 const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   process.env.FRONTEND_URL
@@ -93,7 +95,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production' || origin.endsWith('.vercel.app') || origin.endsWith('.netlify.app') || origin.endsWith('.onrender.com')) {
       callback(null, true);
     } else {
       logger.warn(`CORS blocked request from origin: ${origin}`);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +55,8 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const UploadAssignment = () => {
+  const navigate = useNavigate();
+  const { assignmentId } = useParams();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -95,8 +98,13 @@ const UploadAssignment = () => {
       const parsedData = JSON.parse(userData);
       setStudentData(parsedData);
       fetchAssignments(parsedData);
+    } else {
+      setLoading(false);
+      if (assignmentId) {
+        navigate('/login?type=student');
+      }
     }
-  }, []);
+  }, [assignmentId]);
 
   const fetchAssignments = async (student) => {
     try {
@@ -116,6 +124,13 @@ const UploadAssignment = () => {
       );
       
       setAssignments(response.data);
+      if (assignmentId && Array.isArray(response.data)) {
+        const found = response.data.find(a => (a._id === assignmentId || a.id === assignmentId || a.assignmentId === assignmentId));
+        if (found) {
+          setSelectedAssignment(found);
+          setIsSubmitDialogOpen(true);
+        }
+      }
       setLoading(false);
     } catch (err) {
       console.error("Error fetching assignments:", err);

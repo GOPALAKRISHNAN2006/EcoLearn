@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { withGameCompletion } from "./components/GameCompletionWrapper";
 
 // Lazy-load pages and dashboards
@@ -10,6 +10,7 @@ const Features = lazy(() => import("./pages/Features"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ExploreNature = lazy(() => import("./pages/ExploreNature"));
 const GetStarted = lazy(() => import("./pages/GetStarted"));
 const Login = lazy(() => import("./pages/Login"));
@@ -27,6 +28,7 @@ const Badges = lazy(() => import("./pages/student/Badges"));
 const UploadAssignment = lazy(() => import("./pages/student/UploadAssignment"));
 const ChangePassword = lazy(() => import("./pages/student/ChangePassword"));
 const RewardsStore = lazy(() => import("./pages/student/RewardsStore"));
+const AIAssignmentVerification = lazy(() => import("./pages/student/AIAssignmentVerification"));
 const SaveTheTreesGame = lazy(() => import("./pages/student/SaveTheTreesGame"));
 const EcoQuestAdventure = lazy(() => import("./pages/student/EcoQuestAdventure"));
 const OceanCleanupHero = lazy(() => import("./pages/student/OceanCleanupHero"));
@@ -61,6 +63,7 @@ const EcoLab = lazy(() => import("./pages/student/EcoLab"));
 const ClassManagement = lazy(() => import("./pages/teacher/ClassManagement"));
 const StudentProgressTracking = lazy(() => import("./pages/teacher/StudentProgressTracking"));
 const AssignmentCreation = lazy(() => import("./pages/teacher/AssignmentCreation"));
+const AssignmentReview = lazy(() => import("./pages/teacher/AssignmentReview"));
 const TeacherAnalytics = lazy(() => import("./pages/teacher/TeacherAnalytics"));
 const StudentManagement = lazy(() => import("./pages/teacher/StudentManagement"));
 const AssignmentSubmissions = lazy(() => import("./pages/teacher/AssignmentSubmissions"));
@@ -108,6 +111,7 @@ const App = () => (
       >
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
+            {/* Public and Static Pages */}
             <Route path="/" element={<Index />} />
             <Route path="/features" element={<Features />} />
             <Route path="/about" element={<About />} />
@@ -115,18 +119,47 @@ const App = () => (
             <Route path="/explore-nature" element={<ExploreNature />} />
             <Route path="/get-started" element={<GetStarted />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/login/student" element={<Login />} />
+            <Route path="/login/teacher" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/environmental-stories" element={<EnvironmentalStories />} />
+            <Route path="/stories" element={<Navigate to="/environmental-stories" replace />} />
+            <Route path="/lessons" element={<Lessons />} />
+
+            {/* Role-based Dashboard and General Redirects */}
+            <Route path="/dashboard" element={<Navigate to="/student-dashboard" replace />} />
+            <Route path="/student" element={<Navigate to="/student-dashboard" replace />} />
+            <Route path="/teacher" element={<Navigate to="/teacher-dashboard" replace />} />
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/games" element={<Navigate to="/student/games" replace />} />
+            <Route path="/badges" element={<Navigate to="/student/badges" replace />} />
+            <Route path="/profile" element={<Navigate to="/student/profile" replace />} />
+            <Route path="/leaderboard" element={<Navigate to="/student/leaderboard" replace />} />
+            <Route path="/achievements" element={<Navigate to="/student/achievements" replace />} />
+            <Route path="/upload" element={<Navigate to="/student/upload-assignment" replace />} />
+
+            {/* Student Portal Pages */}
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/student/games" element={<Games />} />
             <Route path="/student/badges" element={<Badges />} />
             <Route path="/student/lessons" element={<Lessons />} />
-            <Route path="/environmental-stories" element={<EnvironmentalStories />} />
             <Route
               path="/student/upload-assignment"
               element={<UploadAssignment />}
             />
+            <Route
+              path="/student/upload-assignment/:assignmentId"
+              element={<UploadAssignment />}
+            />
+            <Route
+              path="/assignment/:assignmentId"
+              element={<UploadAssignment />}
+            />
             <Route path="/student/change-password" element={<ChangePassword />} />
             <Route path="/student/ai" element={<AI />} />
+            <Route path="/student/ai-verification" element={<AIAssignmentVerification />} />
+            <Route path="/student/verify-assignment" element={<AIAssignmentVerification />} />
             <Route path="/student/profile" element={<Profile />} />
             <Route path="/student/leaderboard" element={<Leaderboard />} />
             <Route path="/student/achievements" element={<Achievements />} />
@@ -169,8 +202,13 @@ const App = () => (
               element={<ElectricVehicleCity />}
             />
             <Route path="/student/eco-lab" element={<EcoLab />} />
+            <Route path="/student/green-chemistry-lab" element={<EcoLab />} />
+            <Route path="/student/arctic-rescue-mission" element={<GlobalWeatherDetective />} />
+            <Route path="/student/pollinator-paradise" element={<NatureNinjas />} />
+            <Route path="/student/ecosystem-food-web" element={<EcoQuestAdventure />} />
+            <Route path="/student/carbon-footprint-hunter" element={<NetZeroQuest />} />
             
-            {/* Climate Games Routes */}
+            {/* Climate Games Routes and Aliases */}
             <Route path="/student/games/eco-ninja" element={<EcoNinja />} />
             <Route path="/student/games/eco-runner" element={<EcoRunner />} />
             <Route path="/student/games/eco-snakes-ladders" element={<EcoSnakes />} />
@@ -178,7 +216,24 @@ const App = () => (
             <Route path="/student/games/word-search" element={<WordSearch />} />
             <Route path="/student/games/nature-ninjas" element={<NatureNinjas />} />
             <Route path="/student/games/net-zero-quest" element={<NetZeroQuest />} />
+            <Route path="/student/games/save-the-trees" element={<SaveTheTreesGame />} />
+            <Route path="/student/games/ecoquest-adventure" element={<EcoQuestAdventure />} />
+            <Route path="/student/games/ocean-cleanup-hero" element={<OceanCleanupHero />} />
+            <Route path="/student/games/solar-power-master" element={<SolarPowerMaster />} />
+            <Route path="/student/games/recycling-wizard" element={<RecyclingWizard />} />
+            <Route path="/student/games/wind-farm-engineer" element={<WindFarmEngineer />} />
+            <Route path="/student/games/mountain-ranger" element={<MountainRanger />} />
+            <Route path="/student/games/aquatic-life-guardian" element={<AquaticLifeGuardian />} />
+            <Route path="/student/games/global-weather-detective" element={<GlobalWeatherDetective />} />
+            <Route path="/student/games/electric-vehicle-city" element={<ElectricVehicleCity />} />
+            <Route path="/student/games/eco-lab" element={<EcoLab />} />
+            <Route path="/student/games/green-chemistry-lab" element={<EcoLab />} />
+            <Route path="/student/games/arctic-rescue-mission" element={<GlobalWeatherDetective />} />
+            <Route path="/student/games/pollinator-paradise" element={<NatureNinjas />} />
+            <Route path="/student/games/ecosystem-food-web" element={<EcoQuestAdventure />} />
+            <Route path="/student/games/carbon-footprint-hunter" element={<NetZeroQuest />} />
             
+            {/* Teacher Portal Pages */}
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
             <Route path="/teacher/classes" element={<ClassManagement />} />
             <Route
@@ -194,6 +249,12 @@ const App = () => (
               element={<StudentDetails />}
             />
             <Route path="/teacher/assignments" element={<AssignmentCreation />} />
+            <Route
+              path="/teacher/assignments/edit/:assignmentId"
+              element={<AssignmentCreation />}
+            />
+            <Route path="/teacher/assignment-review" element={<AssignmentReview />} />
+            <Route path="/teacher/assignments/review" element={<AssignmentReview />} />
             <Route path="/teacher/analytics" element={<TeacherAnalytics />} />
             <Route
               path="/teacher/video-generation"
@@ -203,6 +264,8 @@ const App = () => (
               path="/teacher/assignment/:assignmentId/submissions"
               element={<AssignmentSubmissions />}
             />
+
+            {/* Admin Portal Pages */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/login/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -216,14 +279,11 @@ const App = () => (
               element={<SyllabusVideoGenerator />}
             />
             <Route path="/admin/game-management" element={<GameManagement />} />
-            <Route
-              path="/teacher/student-management"
-              element={<StudentManagement />}
-            />
-            <Route
-              path="/teacher/assignment/:assignmentId/submissions"
-              element={<AssignmentSubmissions />}
-            />
+            <Route path="/admin/analytics" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/moderation" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/settings" element={<Navigate to="/admin/dashboard" replace />} />
+
+            {/* Fallback 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

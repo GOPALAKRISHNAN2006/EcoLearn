@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import Navigation from '../../components/Navigation';
 import { 
   FileText,
@@ -20,6 +20,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const AssignmentCreation = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { assignmentId } = useParams();
+  const isEditing = Boolean(assignmentId);
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState([]);
   const [showAISettings, setShowAISettings] = useState(true);
@@ -120,7 +122,41 @@ const AssignmentCreation = () => {
 
   useEffect(() => {
     fetchClasses();
-  }, []);
+    if (assignmentId) {
+      const fetchAssignment = async () => {
+        try {
+          const res = await fetch(`${API_BASE_URL}/assignment/${assignmentId}`);
+          const data = await res.json();
+          if (data.success && data.data) {
+            const a = data.data;
+            setAssignmentData(prev => ({
+              ...prev,
+              title: a.title || '',
+              description: a.description || '',
+              subject: a.subject || 'Environmental Science',
+              classId: a.classId || '',
+              className: a.className || '',
+              maxPoints: a.maxPoints || 100,
+              type: a.type || 'traditional',
+              dueDate: a.dueDate ? new Date(a.dueDate).toISOString().split('T')[0] : '',
+              expectedAnswer: a.expectedAnswer || '',
+              keyPoints: a.keyPoints?.length ? a.keyPoints : [''],
+              enableAIGrading: a.enableAIGrading !== false,
+              gradingCriteria: a.gradingCriteria || prev.gradingCriteria,
+              requireDescription: a.requireDescription || false,
+              requireLocation: a.requireLocation || false,
+              requireVideoDuration: a.requireVideoDuration || false,
+              minVideoDuration: a.minVideoDuration || 2,
+              maxVideoDuration: a.maxVideoDuration || 5,
+            }));
+          }
+        } catch (err) {
+          console.error("Failed to fetch assignment for editing:", err);
+        }
+      };
+      fetchAssignment();
+    }
+  }, [assignmentId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -297,8 +333,11 @@ const AssignmentCreation = () => {
       // Filter out empty key points
       const filteredKeyPoints = assignmentData.keyPoints.filter(kp => kp.trim() !== '');
       
-      const response = await fetch(`${API_BASE_URL}/assignment/create`, {
-        method: 'POST',
+      const url = isEditing ? `${API_BASE_URL}/assignment/${assignmentId}` : `${API_BASE_URL}/assignment/create`;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...assignmentData,
@@ -368,12 +407,14 @@ const AssignmentCreation = () => {
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <FileText size={28} />
-            Create Assignment
+            {isEditing ? 'Edit Assignment' : 'Create Assignment'}
           </h1>
           <p style={{ color: '#6b7280' }}>
-            {classFilter.grade && classFilter.section 
-              ?  `Creating assignment for Grade ${classFilter.grade} - Section ${classFilter.section}`
-              : 'Fill in the details to create a new assignment'
+            {isEditing
+              ? 'Update details for this assignment'
+              : classFilter.grade && classFilter.section 
+                ? `Creating assignment for Grade ${classFilter.grade} - Section ${classFilter.section}`
+                : 'Fill in the details to create a new assignment'
             }
           </p>
         </div>
@@ -1158,7 +1199,7 @@ const AssignmentCreation = () => {
             }}
           >
             <Send size={20} />
-            {loading ? 'Publishing...' : 'Publish Assignment'}
+            {loading ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update Assignment' : 'Publish Assignment')}
           </button>
         </div>
       </div>

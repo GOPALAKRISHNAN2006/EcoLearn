@@ -343,7 +343,7 @@ export default function EnvironmentalStories() {
       
       <div className="pt-20 px-4 py-8 md:px-8 max-w-6xl mx-auto">
         {/* Back Button */}
-        <Link to="/lessons">
+        <Link to="/student/lessons">
           <Button variant="ghost" size="lg" className="rounded-full text-lg gap-2 mb-6">
             <ArrowLeft className="w-5 h-5" />
             Back to Lessons

@@ -31,6 +31,16 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(userTypeParam === 'teacher' ? 'teacher' : 'student');
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (userTypeParam === 'admin') {
+      navigate('/admin/login');
+    } else if (userTypeParam === 'teacher') {
+      setActiveTab('teacher');
+    } else if (userTypeParam === 'student') {
+      setActiveTab('student');
+    }
+  }, [userTypeParam, navigate]);
   
   const [studentForm, setStudentForm] = useState({
     rollNumber: "",
@@ -303,6 +313,12 @@ const Login = () => {
                 New teacher?{" "}
                 <Link to="/register" className="text-emerald-600 hover:text-emerald-700 font-medium">
                   Register here
+                </Link>
+              </p>
+              <p className="text-sm text-gray-600">
+                School Administrator?{" "}
+                <Link to="/admin/login" className="text-emerald-600 hover:text-emerald-700 font-medium">
+                  Admin Login
                 </Link>
               </p>
             </div>
