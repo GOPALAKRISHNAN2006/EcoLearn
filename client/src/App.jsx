@@ -3,6 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { withGameCompletion } from "./components/GameCompletionWrapper";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy-load pages and dashboards
 const Index = lazy(() => import("./pages/Index"));
@@ -109,7 +111,9 @@ const App = () => (
       <BrowserRouter
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <Suspense fallback={<LoadingSpinner />}>
+        <ScrollToTop />
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Public and Static Pages */}
             <Route path="/" element={<Index />} />
@@ -287,6 +291,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

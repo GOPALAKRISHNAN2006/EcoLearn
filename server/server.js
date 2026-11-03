@@ -156,6 +156,13 @@ app.use('/uploads', (req, res, next) => {
 }, express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => res.send("API is Working"));
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Debug endpoint to list uploaded files
 app.get('/api/files/list', (req, res) => {
